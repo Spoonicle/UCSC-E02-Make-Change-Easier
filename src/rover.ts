@@ -32,17 +32,40 @@ function drawRover() {
   }`;
 }
 
+interface Command {
+  readonly name: string;
+  execute(): void;
+}
+
+const forwardCommand: Command = {
+  name: "Forward",
+  execute(): void {
+    if (direction === 0) y = Math.max(0, y - 1);
+    if (direction === 1) x = Math.min(4, x + 1);
+    if (direction === 2) y = Math.min(4, y + 1);
+    if (direction === 3) x = Math.max(0, x - 1);
+  },
+};
+
+const rightCommand: Command = {
+  name: "Right",
+  execute(): void {
+    direction = (direction + 1) % 4;
+  },
+};
+
 document.querySelector<HTMLButtonElement>("#rover-forward")!.onclick = () => {
-  if (direction === 0) y = Math.max(0, y - 1);
-  if (direction === 1) x = Math.min(4, x + 1);
-  if (direction === 2) y = Math.min(4, y + 1);
-  if (direction === 3) x = Math.max(0, x - 1);
-  drawRover();
+  runCommand(forwardCommand);
 };
 document.querySelector<HTMLButtonElement>("#rover-right")!.onclick = () => {
-  direction = (direction + 1) % 4;
-  drawRover();
+  runCommand(rightCommand);
 };
+
+function runCommand(command: Command) {
+  command.execute();
+  drawRover();
+}
+
 document.querySelector<HTMLButtonElement>("#rover-reset")!.onclick = () => {
   x = 2;
   y = 2;
