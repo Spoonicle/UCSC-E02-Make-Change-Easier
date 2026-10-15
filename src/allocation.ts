@@ -6,7 +6,7 @@ const readout = document.querySelector<HTMLParagraphElement>(
   "#allocation-readout",
 )!;
 let n = 2;
-
+//temp change to push to main
 function u() {
   const p = n * 3;
   const c = 6;
