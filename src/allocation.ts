@@ -7,6 +7,12 @@ type ShiftResults = {
   balance: number;
 };
 
+type ResourceBar = {
+  title: string;
+  value: number;
+  color: string;
+};
+
 const canvas = document.querySelector<HTMLCanvasElement>("#allocation-canvas")!;
 const ctx = canvas.getContext("2d")!;
 const readout = document.querySelector<HTMLParagraphElement>(
@@ -47,16 +53,33 @@ function drawCrew(productionCrew: number) {
 }
 
 function drawProduction(results: ShiftResults) {
-  ctx.fillStyle = "#233e43";
   ctx.font = "14px system-ui";
-  ctx.fillText(`Producers: ${results.productionCrew} / 6`, 18, 76);
-  ctx.fillText(`Production: ${results.suppliesProduced}`, 18, 102);
-  ctx.fillStyle = "#27766b";
-  ctx.fillRect(18, 110, results.suppliesProduced * 14, 20);
   ctx.fillStyle = "#233e43";
-  ctx.fillText(`Consumption: ${results.consumed}`, 18, 154);
-  ctx.fillStyle = "#a44d23";
-  ctx.fillRect(18, 162, results.consumed * 14, 20);
+  ctx.fillText(`Producers: ${results.productionCrew} / 6`, 18, 76);
+
+  const rows: ResourceBar[] = [
+    {
+      title: "Production",
+      value: results.suppliesProduced,
+      color: "#27766b",
+    },
+    {
+      title: "Consumption",
+      value: results.consumed,
+      color: "#a44d23",
+    },
+  ];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const textY = 102 + i * 52;
+    const barY = textY + 8;
+
+    ctx.fillStyle = "#233e43";
+    ctx.fillText(`${row.title}: ${row.value}`, 18, textY);
+    ctx.fillStyle = row.color;
+    ctx.fillRect(18, barY, row.value * 14, 20);
+  }
 }
 
 function formatReadout(results: ShiftResults) {
