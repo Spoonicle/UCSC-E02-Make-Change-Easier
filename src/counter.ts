@@ -60,7 +60,11 @@ function setCount(next: number) {
   count = bounded;
   const status = getShieldStatus(count);
   shieldEvents.dispatchEvent(new CustomEvent("change", { detail: status }));
-  if (panel) updateStats(status);
+}
+
+function onInspectorUpdate(event: Event) {
+  const snapshot = event as CustomEvent<ShieldStatus>;
+  updateStats(snapshot.detail);
 }
 
 shieldEvents.addEventListener("change", (event) => {
@@ -82,11 +86,13 @@ document.querySelector<HTMLButtonElement>("#counter-open")!.onclick = () => {
   panel = document.createElement("p");
   host.append(panel);
   renderStats(getShieldStatus(count));
+  shieldEvents.addEventListener("change", onInspectorUpdate);
 };
 document.querySelector<HTMLButtonElement>("#counter-close")!.onclick = () => {
   if (!panel) return;
   panel.remove();
   panel = null;
+  shieldEvents.removeEventListener("change", onInspectorUpdate);
 };
 
 const status = getShieldStatus(count);
