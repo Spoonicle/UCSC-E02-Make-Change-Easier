@@ -1,5 +1,6 @@
 export {};
 
+const shieldEvents = new EventTarget();
 const canvas = document.querySelector<HTMLCanvasElement>("#counter-canvas")!;
 const ctx = canvas.getContext("2d")!;
 const readout = document.querySelector<HTMLParagraphElement>(
@@ -58,9 +59,14 @@ function setCount(next: number) {
   if (bounded === count) return;
   count = bounded;
   const status = getShieldStatus(count);
-  drawMeter(status);
+  shieldEvents.dispatchEvent(new CustomEvent("change", { detail: status }));
   if (panel) updateStats(status);
 }
+
+shieldEvents.addEventListener("change", (event) => {
+  const custom = event as CustomEvent<ShieldStatus>;
+  drawMeter(custom.detail);
+});
 
 document.querySelector<HTMLButtonElement>("#counter-less")!.onclick = () => {
   setCount(count - 1);
